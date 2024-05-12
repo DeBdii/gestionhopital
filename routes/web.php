@@ -3,6 +3,8 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\DoctorController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,7 +30,33 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-Route::get('/doctor-management', [UserController::class, 'index'])->name('doctor-management');
+
+
+
+
+
+
+                                            //ADMIN ROUTES//
+
+//GESTIONDESDOCTORS
+
+Route::get('/admin/doctor', [AdminController::class, 'manageDoctors'])->name('admin.doctors.index');
+
+// Route for showing the form to create a new doctor
+Route::get('/admin/doctors/create', [AdminController::class, 'createDoctor'])->name('admin.doctors.create');
+
+// Route for storing a newly created doctor
+Route::post('/admin/doctors', [AdminController::class, 'storeDoctor'])->name('admin.doctors.store');
+
+// Route for showing the form to edit a doctor
+Route::get('/admin/doctors/{id}/edit', [AdminController::class, 'editDoctor'])->name('admin.doctors.edit');
+
+// Route for updating the details of a doctor
+Route::put('/admin/doctors/{id}', [AdminController::class, 'updateDoctor'])->name('admin.doctors.update');
+
+// Route for deleting a doctor
+Route::delete('/admin/doctors/{id}', [AdminController::class, 'deleteDoctor'])->name('admin.doctors.destroy');
+
 
 
 require __DIR__.'/auth.php';

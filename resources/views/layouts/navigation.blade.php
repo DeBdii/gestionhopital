@@ -17,13 +17,13 @@
                     </x-nav-link>
                 </div>
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('doctor-management')" :active="request()->routeIs('dashboard')">
+                    <x-nav-link :href="route('admin.doctors.index')" :active="request()->routeIs('dashboard')">
                         {{ __('Gestion des docteurs') }}
                     </x-nav-link>
                 </div>
                     <!-- Add this new link -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('doctor-management')" :active="request()->routeIs('doctor-management')">
+                    <x-nav-link :href="route('admin.doctors.index')" :active="request()->routeIs('doctor-management')">
                         {{ __('Gestion de staff') }}
                     </x-nav-link>
                 </div>
