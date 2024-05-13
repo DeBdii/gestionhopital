@@ -25,4 +25,5 @@ class Department extends Model
     {
         return $this->belongsTo(Stock::class, 'item_id');
     }
+
 }

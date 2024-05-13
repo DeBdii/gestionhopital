@@ -10,7 +10,7 @@ class StaffController extends Controller
     // Index (List all staff members)
     public function index()
     {
-        $staffMembers = User::where('user_type', 'Staff')->get();
+        $staffMembers = User::whereIn('user_type', ['Receptionist', 'SupportStaff', 'Nurse'])->get();
         return $staffMembers;
     }
 
@@ -28,32 +28,34 @@ class StaffController extends Controller
             'email' => 'required|string|email|unique:users',
             'password' => 'required|string|min:6',
             'salary' => 'required|numeric|min:0',
+            'user_type' => 'required|in:Receptionist,Nurse,SupportStaff', // Validate the user_type field
+
             // Add more validation rules as needed
         ]);
 
         $user = new User();
         $user->name = $validatedData['name'];
         $user->email = $validatedData['email'];
-        $user->user_type = 'Staff'; // Predefine the user type as 'Staff'
+        $user->user_type = $validatedData['user_type']; // Assign the role directly from the validated data
         $user->password = bcrypt($request->password);
 
         $user->save();
 
-        return redirect()->route('staff.index')->with('success', 'Staff member created successfully.');
+        return redirect()->route('admin.staff.index')->with('success', 'Staff member created successfully.');
     }
 
     // Show (Display a specific staff member)
     public function show($id)
     {
         $staffMember = User::findOrFail($id);
-        return view('staff.show', compact('staffMember'));
+        return view('admin.staff.show', compact('staffMember'));
     }
 
     // Edit (Show the form to edit a staff member)
     public function edit($id)
     {
         $staffMember = User::findOrFail($id);
-        return view('staff.edit', compact('staffMember'));
+        return view('admin.staff.edit', compact('staffMember'));
     }
 
     // Update (Update the details of a specific staff member)
@@ -68,7 +70,7 @@ class StaffController extends Controller
         $staffMember = User::findOrFail($id);
         $staffMember->update($validatedData);
 
-        return redirect()->route('staff.index')->with('success', 'Staff member updated successfully.');
+        return redirect()->route('admin.staff.index')->with('success', 'Staff member updated successfully.');
     }
 
     // Destroy (Delete a specific staff member)
@@ -77,6 +79,6 @@ class StaffController extends Controller
         $staffMember = User::findOrFail($id);
         $staffMember->delete();
 
-        return redirect()->route('staff.index')->with('success', 'Staff member deleted successfully.');
+        return redirect()->route('admin.staff.index')->with('success', 'Staff member deleted successfully.');
     }
 }

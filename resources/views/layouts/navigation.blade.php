@@ -23,8 +23,13 @@
                 </div>
                     <!-- Add this new link -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('admin.doctors.index')" :active="request()->routeIs('doctor-management')">
+                    <x-nav-link :href="route('admin.staff.index')" :active="request()->routeIs('doctor-management')">
                         {{ __('Gestion de staff') }}
+                    </x-nav-link>
+                </div>
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('admin.departments.index')" :active="request()->routeIs('doctor-management')">
+                        {{ __('Gestion des départements') }}
                     </x-nav-link>
                 </div>
 
