@@ -156,7 +156,7 @@ class AdminController extends Controller
 
     public function manageDepartments()
     {
-        $departments = Department::with('user')->get();
+        $departments = Department::with('users', 'items')->get();
         return view('admin.departments.index', compact('departments'));
     }
 
@@ -164,8 +164,8 @@ class AdminController extends Controller
     public function createDepartment()
     {
         $doctors = User::where('user_type', 'Doctor')->get();
-        $stockItems = Item::all();
-        return view('admin.departments.create', compact('doctors', 'stockItems'));
+        $items = Item::all();
+        return view('admin.departments.create', compact('doctors', 'items'));
     }
 
     // Store a newly created department
@@ -173,11 +173,21 @@ class AdminController extends Controller
     {
         $validatedData = $request->validate([
             'department_name' => 'required|string|max:100',
-            'doctors_id' => 'nullable|exists:users,id',
-            'item_id' => 'nullable|exists:stocks,id',
+            'doctors' => 'nullable|array',
+            'doctors.*' => 'exists:users,id',
+            'items' => 'nullable|array',
+            'items.*' => 'exists:items,id',
         ]);
 
-        Department::create($validatedData);
+        $department = Department::create(['department_name' => $validatedData['department_name']]);
+
+        if (isset($validatedData['doctors'])) {
+            $department->users()->attach($validatedData['doctors']);
+        }
+
+        if (isset($validatedData['items'])) {
+            $department->items()->attach($validatedData['items']);
+        }
 
         return redirect()->route('admin.departments.index')->with('success', 'Department created successfully.');
     }
@@ -187,8 +197,8 @@ class AdminController extends Controller
     {
         $department = Department::findOrFail($id);
         $doctors = User::where('user_type', 'Doctor')->get();
-        $stockItems = Item::all();
-        return view('admin.departments.edit', compact('department', 'doctors', 'stockItems'));
+        $items = Item::all();
+        return view('admin.departments.edit', compact('department', 'doctors', 'items'));
     }
 
     // Update the details of a department
@@ -196,12 +206,26 @@ class AdminController extends Controller
     {
         $validatedData = $request->validate([
             'department_name' => 'required|string|max:100',
-            'doctors_id' => 'nullable|exists:users,id',
-            'item_id' => 'nullable|exists:stocks,id',
+            'doctors' => 'nullable|array',
+            'doctors.*' => 'exists:users,id',
+            'items' => 'nullable|array',
+            'items.*' => 'exists:items,id',
         ]);
 
         $department = Department::findOrFail($id);
-        $department->update($validatedData);
+        $department->update(['department_name' => $validatedData['department_name']]);
+
+        if (isset($validatedData['doctors'])) {
+            $department->users()->sync($validatedData['doctors']);
+        } else {
+            $department->users()->detach();
+        }
+
+        if (isset($validatedData['items'])) {
+            $department->items()->sync($validatedData['items']);
+        } else {
+            $department->items()->detach();
+        }
 
         return redirect()->route('admin.departments.index')->with('success', 'Department updated successfully.');
     }
@@ -210,6 +234,8 @@ class AdminController extends Controller
     public function deleteDepartment($id)
     {
         $department = Department::findOrFail($id);
+        $department->users()->detach(); // Detach all users associated with this department
+        $department->items()->detach(); // Detach all items associated with this department
         $department->delete();
 
         return redirect()->route('admin.departments.index')->with('success', 'Department deleted successfully.');
