@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Department;
 use App\Models\User;
-use App\Models\Stock;
-
+use App\Models\Item;
+use Illuminate\Support\Facades\DB;
 class AdminController extends Controller
 {
     /**
@@ -152,9 +152,11 @@ class AdminController extends Controller
 
     //PARTIE DEPARTEMENTS
 
+
+
     public function manageDepartments()
     {
-        $departments = Department::all();
+        $departments = Department::with('user')->get();
         return view('admin.departments.index', compact('departments'));
     }
 
@@ -162,7 +164,7 @@ class AdminController extends Controller
     public function createDepartment()
     {
         $doctors = User::where('user_type', 'Doctor')->get();
-        $stockItems = Stock::all();
+        $stockItems = Item::all();
         return view('admin.departments.create', compact('doctors', 'stockItems'));
     }
 
@@ -185,7 +187,7 @@ class AdminController extends Controller
     {
         $department = Department::findOrFail($id);
         $doctors = User::where('user_type', 'Doctor')->get();
-        $stockItems = Stock::all();
+        $stockItems = Item::all();
         return view('admin.departments.edit', compact('department', 'doctors', 'stockItems'));
     }
 

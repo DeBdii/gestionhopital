@@ -21,7 +21,7 @@
                         {{ __('Gestion des docteurs') }}
                     </x-nav-link>
                 </div>
-                    <!-- Add this new link -->
+                <!-- Add this new link -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('admin.staff.index')" :active="request()->routeIs('doctor-management')">
                         {{ __('Gestion de staff') }}
@@ -60,7 +60,7 @@
                             @csrf
 
                             <x-dropdown-link :href="route('logout')"
-                                    onclick="event.preventDefault();
+                                             onclick="event.preventDefault();
                                                 this.closest('form').submit();">
                                 {{ __('Log Out') }}
                             </x-dropdown-link>
@@ -106,7 +106,7 @@
                     @csrf
 
                     <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault();
+                                           onclick="event.preventDefault();
                                         this.closest('form').submit();">
                         {{ __('Log Out') }}
                     </x-responsive-nav-link>

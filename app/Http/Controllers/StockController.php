@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Stock;
+use App\Models\Item;
 use Illuminate\Http\Request;
 
 class StockController extends Controller
@@ -34,7 +34,7 @@ class StockController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Stock $stock)
+    public function show(Item $stock)
     {
         //
     }
@@ -42,7 +42,7 @@ class StockController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Stock $stock)
+    public function edit(Item $stock)
     {
         //
     }
@@ -50,7 +50,7 @@ class StockController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Stock $stock)
+    public function update(Request $request, Item $stock)
     {
         //
     }
@@ -58,7 +58,7 @@ class StockController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Stock $stock)
+    public function destroy(Item $stock)
     {
         //
     }

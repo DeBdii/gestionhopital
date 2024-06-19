@@ -29,7 +29,7 @@
 
             <!-- Page Content -->
             <main>
-                @yield('content')
+                @section('conten')
             </main>
         </div>
     </body>

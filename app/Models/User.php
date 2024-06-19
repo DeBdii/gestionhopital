@@ -2,24 +2,21 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as AuthenticatableUser;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 
-
-class User extends AuthenticatableUser implements \Illuminate\Contracts\Auth\Authenticatable
+class User extends Authenticatable implements AuthenticatableContract
 {
-    use HasFactory, Notifiable;
+    // Ensure primary key is defined
+    protected $primaryKey = 'id';
+
+    // Ensure table name is correctly defined
+    protected $table = 'users';
+
+    // Other model properties and relationships
 
     protected $fillable = [
-        'name',
-        'user_type',
-        'specialty',
-        'password_hash',
-        'salary',
-        'department_id',
+        'name', 'user_type', 'email', 'specialty', 'password', 'salary', 'department_id'
     ];
 
     public function department()

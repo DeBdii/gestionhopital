@@ -21,8 +21,11 @@
                             @foreach ($departments as $department)
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap">{{ $department->department_name }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ optional($department->doctor)->name }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ optional($department->stocks)->item_name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ optional($department->user)->name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">@foreach ($department->stock as $stockItem)
+                                            {{ $stockItem->item_name }}
+                                        @endforeach
+                                    </td>
 
 
                                         <!-- Add your CRUD actions here -->

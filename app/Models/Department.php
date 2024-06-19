@@ -10,20 +10,16 @@ class Department extends Model
     use HasFactory;
 
     protected $fillable = [
-        'department_name',
-        'doctors_id',
-        'item_id',
+        'department_name'
     ];
 
-    // Define relationships
-    public function doctor()
+    public function user()
     {
-        return $this->belongsTo(User::class, 'doctors_id');
+        return $this->hasMany(User::class);
     }
 
-    public function stock()
+    public function items()
     {
-        return $this->belongsTo(Stock::class, 'item_id');
+        return $this->belongsToMany(Item::class, 'department_items', 'department_id', 'item_id')->withTimestamps();
     }
-
 }
