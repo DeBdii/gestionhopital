@@ -10,8 +10,7 @@ class DoctorController extends Controller
     // Index (List all doctors)
     public function index()
     {
-        $doctors = User::where('user_type', 'Doctor')->get();
-        return $doctors;
+
     }
 
     // Create (Show the form to create a new doctor)

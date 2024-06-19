@@ -72,9 +72,9 @@ class AdminController extends Controller
     //PARTIE DOCTORS
     public function manageDoctors(DoctorController $doctorController)
     {
-        // Retrieve all doctors using DoctorController's index method
-        $doctors = $doctorController->index();
-        // Return view for admin's doctor management page
+
+        $doctors = User::where('user_type', 'Doctor')->get();
+
         return view('admin.doctor_management', compact('doctors'));
     }
     public function createDoctor(DoctorController $doctorController)
@@ -157,18 +157,13 @@ class AdminController extends Controller
     public function manageDepartments()
     {
         $departments = Department::with('users', 'items')->get();
-        return view('admin.departments.index', compact('departments'));
-    }
-
-    // Show the form to create a new department
-    public function createDepartment()
-    {
-        $doctors = User::where('user_type', 'Doctor')->get();
+        $doctors = User::where('user_type', 'Doctor')->whereDoesntHave('department')->get();
         $items = Item::all();
-        return view('admin.departments.create', compact('doctors', 'items'));
+
+        return view('admin.departments.index', compact('departments', 'doctors', 'items'));
     }
 
-    // Store a newly created department
+// Store a newly created department
     public function storeDepartment(Request $request)
     {
         $validatedData = $request->validate([
@@ -179,29 +174,50 @@ class AdminController extends Controller
             'items.*' => 'exists:items,id',
         ]);
 
+        // Create the department
         $department = Department::create(['department_name' => $validatedData['department_name']]);
 
+        // Assign doctors to the department if selected
         if (isset($validatedData['doctors'])) {
-            $department->users()->attach($validatedData['doctors']);
+            foreach ($validatedData['doctors'] as $doctorId) {
+                $doctor = User::find($doctorId);
+                $doctor->department_id = $department->id;
+                $doctor->save();
+            }
         }
 
+        // Assign items to the department if selected
         if (isset($validatedData['items'])) {
-            $department->items()->attach($validatedData['items']);
+            foreach ($validatedData['items'] as $itemId) {
+                DB::table('department_items')->insert([
+                    'department_id' => $department->id,
+                    'item_id' => $itemId,
+                ]);
+            }
         }
 
         return redirect()->route('admin.departments.index')->with('success', 'Department created successfully.');
     }
 
+
+
+
+
+// Show the form to edit a department
     // Show the form to edit a department
+    // Controller method to show edit department modal
     public function editDepartment($id)
     {
-        $department = Department::findOrFail($id);
+        $department = Department::with('users', 'items')->findOrFail($id);
         $doctors = User::where('user_type', 'Doctor')->get();
         $items = Item::all();
-        return view('admin.departments.edit', compact('department', 'doctors', 'items'));
+
+        // Pass 'department' instead of 'departments'
+        return view('admin.departments.index', compact('department', 'doctors', 'items'));
     }
 
-    // Update the details of a department
+
+// Update the details of a department
     public function updateDepartment(Request $request, $id)
     {
         $validatedData = $request->validate([
@@ -218,28 +234,34 @@ class AdminController extends Controller
         if (isset($validatedData['doctors'])) {
             $department->users()->sync($validatedData['doctors']);
         } else {
-            $department->users()->detach();
+            $department->users()->detach(); // Remove all associated doctors
         }
 
         if (isset($validatedData['items'])) {
             $department->items()->sync($validatedData['items']);
         } else {
-            $department->items()->detach();
+            $department->items()->detach(); // Remove all associated items
         }
 
         return redirect()->route('admin.departments.index')->with('success', 'Department updated successfully.');
     }
 
+
+
     // Delete a department
     public function deleteDepartment($id)
     {
         $department = Department::findOrFail($id);
-        $department->users()->detach(); // Detach all users associated with this department
-        $department->items()->detach(); // Detach all items associated with this department
+
+        // Detach all items associated with this department
+        $department->items()->detach();
+
+        // Delete the department itself
         $department->delete();
 
         return redirect()->route('admin.departments.index')->with('success', 'Department deleted successfully.');
     }
+
 
 
 

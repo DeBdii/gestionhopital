@@ -29,7 +29,8 @@
 
             <!-- Page Content -->
             <main>
-                @section('conten')
+                @section('content')
+
             </main>
         </div>
     </body>
