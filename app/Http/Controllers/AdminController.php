@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Department;
 use App\Models\User;
 use App\Models\Item;
+use App\Models\DepartmentItem;
 use Illuminate\Support\Facades\DB;
 class AdminController extends Controller
 {
@@ -222,32 +223,43 @@ class AdminController extends Controller
     {
         $validatedData = $request->validate([
             'department_name' => 'required|string|max:100',
-            'doctors' => 'nullable|array',
-            'doctors.*' => 'exists:users,id',
-            'items' => 'nullable|array',
-            'items.*' => 'exists:items,id',
+            'edit_doctors' => 'nullable|array',
+            'edit_doctors.*' => 'exists:users,id',
+            'edit_items' => 'nullable|array',
+            'edit_items.*' => 'exists:items,id',
         ]);
 
         $department = Department::findOrFail($id);
+
+        // Update department name
         $department->update(['department_name' => $validatedData['department_name']]);
 
-        if (isset($validatedData['doctors'])) {
-            $department->users()->sync($validatedData['doctors']);
-        } else {
-            $department->users()->detach(); // Remove all associated doctors
+        // Update associated users (doctors)
+        if (isset($validatedData['edit_doctors'])) {
+            foreach ($validatedData['edit_doctors'] as $doctorId) {
+                $user = User::findOrFail($doctorId);
+
+                // Check if the doctor is already associated with this department
+                if (!$department->users->contains($user)) {
+                    $department->users()->save($user);
+                }
+            }
         }
 
-        if (isset($validatedData['items'])) {
-            $department->items()->sync($validatedData['items']);
-        } else {
-            $department->items()->detach(); // Remove all associated items
+        // Update associated items
+        if (isset($validatedData['edit_items'])) {
+            foreach ($validatedData['edit_items'] as $itemId) {
+                $item = Item::findOrFail($itemId);
+
+                // Check if the item is already associated with this department
+                if (!$department->items->contains($item)) {
+                    $department->items()->save($item);
+                }
+            }
         }
 
         return redirect()->route('admin.departments.index')->with('success', 'Department updated successfully.');
     }
-
-
-
     // Delete a department
     public function deleteDepartment($id)
     {

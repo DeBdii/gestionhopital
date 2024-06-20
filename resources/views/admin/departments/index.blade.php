@@ -35,7 +35,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        @foreach ($departments as $department)
+                        @forelse ($departments as $department)
                             <tr>
                                 <td>{{ $department->department_name }}</td>
                                 <td>
@@ -51,7 +51,7 @@
                                     @endforeach
                                 </td>
                                 <td>
-                                    <a href="{{ route('admin.departments.edit', $department->id) }}" class="btn btn-sm btn-info">Edit</a>
+                                    <a href="#" class="btn btn-sm btn-info edit-department" data-toggle="modal" data-target="#editDepartmentModal{{ $department->id }}">Edit</a>
                                     <form action="{{ route('admin.departments.destroy', $department->id) }}" method="POST" class="d-inline-block">
                                         @csrf
                                         @method('DELETE')
@@ -59,8 +59,11 @@
                                     </form>
                                 </td>
                             </tr>
-                        @endforeach
-
+                        @empty
+                            <tr>
+                                <td colspan="4">No departments found.</td>
+                            </tr>
+                        @endforelse
                         </tbody>
                     </table>
                 </div>
@@ -69,11 +72,8 @@
     </div>
 </div>
 
-
-
-<!-- Modal -->
-<div class="modal fade" id="createDepartmentModal" tabindex="-1" role="dialog"
-     aria-labelledby="createDepartmentModalLabel" aria-hidden="true">
+<!-- Modal for creating a new department -->
+<div class="modal fade" id="createDepartmentModal" tabindex="-1" role="dialog" aria-labelledby="createDepartmentModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -125,59 +125,60 @@
     </div>
 </div>
 
-<!-- Modal for editing a department -->
-<!-- Modal for editing a department -->
-<div class="modal fade" id="editDepartmentModal" tabindex="-1" role="dialog" aria-labelledby="editDepartmentModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <form id="editDepartmentForm" action="{{ route('admin.departments.update', $department->id) }}" method="POST">
-                @csrf
-                @method('PUT')
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editDepartmentModalLabel">Edit Department</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" id="edit_department_id" name="department_id" value="{{ $department->id }}">
-
-                    <div class="form-group">
-                        <label for="edit_department_name">Department Name</label>
-                        <input type="text" class="form-control" id="edit_department_name" name="department_name"
-                               value="{{ $department->department_name }}" required>
+<!-- Modals for editing departments -->
+@foreach ($departments as $department)
+    <div class="modal fade" id="editDepartmentModal{{ $department->id }}" tabindex="-1" role="dialog" aria-labelledby="editDepartmentModalLabel{{ $department->id }}" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form id="editDepartmentForm{{ $department->id }}" action="{{ route('admin.departments.update', $department->id) }}" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editDepartmentModalLabel{{ $department->id }}">Edit Department</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="edit_department_id" name="department_id" value="{{ $department->id }}">
 
-                    <div class="form-group">
-                        <label for="edit_doctors">Select Doctor(s)</label>
-                        <select name="edit_doctors[]" id="edit_doctors" multiple class="form-control">
-                            @foreach ($doctors as $doctor)
-                                <option value="{{ $doctor->id }}" {{ $department->users->contains('id', $doctor->id) ? 'selected' : '' }}>
-                                    {{ $doctor->name }} - {{ $doctor->specialty }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
+                        <div class="form-group">
+                            <label for="edit_department_name">Department Name</label>
+                            <input type="text" class="form-control" id="edit_department_name{{ $department->id }}" name="department_name"
+                                   value="{{ $department->department_name }}" required>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="edit_items">Select Stock Item(s)</label>
-                        <select name="edit_items[]" id="edit_items" multiple class="form-control">
-                            @foreach ($items as $item)
-                                <option value="{{ $item->id }}" {{ $department->items->contains('id', $item->id) ? 'selected' : '' }}>
-                                    {{ $item->name }} - Quantity: {{ $item->quantity }}
-                                </option>
-                            @endforeach
-                        </select>
+                        <div class="form-group">
+                            <label for="edit_doctors{{ $department->id }}">Select Doctor(s)</label>
+                            <select name="edit_doctors[]" id="edit_doctors{{ $department->id }}" multiple class="form-control">
+                                @foreach ($doctors as $doctor)
+                                    <option value="{{ $doctor->id }}" {{ $department->users->contains('id', $doctor->id) ? 'selected' : '' }}>
+                                        {{ $doctor->name }} - {{ $doctor->specialty }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="edit_items{{ $department->id }}">Select Stock Item(s)</label>
+                            <select name="edit_items[]" id="edit_items{{ $department->id }}" multiple class="form-control">
+                                @foreach ($items as $item)
+                                    <option value="{{ $item->id }}" {{ $department->items->contains('id', $item->id) ? 'selected' : '' }}>
+                                        {{ $item->name }} - Quantity: {{ $item->quantity }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Save changes</button>
-                </div>
-            </form>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
+@endforeach
 
 <!-- Bootstrap JS, jQuery, and Popper.js -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -188,11 +189,10 @@
 <script>
     $(document).ready(function() {
         $('.edit-department').click(function() {
-            // No need for AJAX here, modal is already in the view
+            // This script is placeholder for handling edit click events if needed
         });
     });
 </script>
 
 </body>
 </html>
-
