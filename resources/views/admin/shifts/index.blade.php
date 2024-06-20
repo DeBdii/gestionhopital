@@ -234,38 +234,14 @@
 
 <!-- Custom JavaScript -->
 <script>
-    $(document).ready(function() {
-        // Delete Shift AJAX call
-        $('.delete-shift').click(function(e) {
-            e.preventDefault();
+    <!-- Bootstrap JS, jQuery, and Popper.js -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-            var shiftId = $(this).data('id');
+<!-- Custom JavaScript -->
 
-            if (confirm('Are you sure you want to delete this shift?')) {
-                $.ajax({
-                    url: '/admin/shifts/' + shiftId,
-                    type: 'DELETE',
-                    data: {
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function(response) {
-                        // Check if the delete was successful
-                        if (response == 'success') {
-                            // Remove the row from the table
-                            $('tr[data-id="' + shiftId + '"]').remove();
-                            alert('Shift deleted successfully.');
-                        } else {
-                            alert('Failed to delete shift.');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error deleting shift:', error);
-                        alert('Error deleting shift. Please try again later.');
-                    }
-                });
-            }
-        });
-    });
+
 
 </script>
 

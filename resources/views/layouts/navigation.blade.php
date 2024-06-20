@@ -37,6 +37,11 @@
                         {{ __('Gestion des shifts') }}
                     </x-nav-link>
                 </div>
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('admin.items.index')" :active="request()->routeIs('stock-management')">
+                        {{ __('Gestion de stock') }}
+                    </x-nav-link>
+                </div>
             </div>
 
             <!-- Settings Dropdown -->

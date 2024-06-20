@@ -121,4 +121,16 @@ Route::prefix('admin')->name('admin.')->group(function () {
 Route::delete('/admin/shifts/{id}', [AdminShiftsController::class, 'deleteShift']);
 
 
+// GESTION DE STOCKKK
+
+
+
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('items', [AdminController::class, 'manageItems'])->name('items.index');
+    Route::post('items/store', [AdminController::class, 'storeItem'])->name('items.store');
+    Route::put('items/{item}/update', [AdminController::class, 'updateItem'])->name('items.update');
+    Route::delete('items/{item}/delete', [AdminController::class, 'deleteItem'])->name('items.delete');
+});
+
 require __DIR__.'/auth.php';

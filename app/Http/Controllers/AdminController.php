@@ -369,6 +369,50 @@ class AdminController extends Controller
 
 
 
+    public function manageItems()
+    {
+        $items = Item::all();
+        return view('admin.items.index', compact('items'));
+    }
 
+    public function storeItem(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'quantity' => 'required|integer',
+            'description' => 'nullable|string',
+            'dosage' => 'nullable|string|max:255',
+        ]);
 
+        Item::create($request->all());
+
+        return redirect()->route('admin.items.index')
+            ->with('success', 'Item created successfully.');
+    }
+
+    public function updateItem(Request $request, Item $item)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'quantity' => 'required|integer',
+            'description' => 'nullable|string',
+            'dosage' => 'nullable|string|max:255',
+        ]);
+
+        $item->update($request->all());
+
+        return redirect()->route('admin.items.index')
+            ->with('success', 'Item updated successfully.');
+    }
+
+    public function deleteItem(Item $item)
+    {
+        $item->delete();
+
+        return redirect()->route('admin.items.index')
+            ->with('success', 'Item deleted successfully.');
+    }
 }
+
+
+
