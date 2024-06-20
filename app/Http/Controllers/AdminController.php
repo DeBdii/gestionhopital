@@ -6,8 +6,11 @@ use Illuminate\Http\Request;
 use App\Models\Department;
 use App\Models\User;
 use App\Models\Item;
+use App\Models\Shift;
 use App\Models\DepartmentItem;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+
 class AdminController extends Controller
 {
     /**
@@ -273,6 +276,97 @@ class AdminController extends Controller
 
         return redirect()->route('admin.departments.index')->with('success', 'Department deleted successfully.');
     }
+
+
+
+
+    //GESTIONSHIFTS
+
+    // Show all shifts
+
+    public function manageShifts()
+    {
+        $shifts = Shift::with(['doctors', 'employees'])->get();
+        $doctors = User::where('user_type', 'Doctor')->get();
+        $employees = User::whereIn('user_type', ['Nurse', 'Receptionist', 'SupportStaff'])->get();
+
+        return view('admin.shifts.index', compact('shifts', 'doctors', 'employees'));
+    }
+
+    public function storeShift(Request $request)
+    {
+        $validatedData = $request->validate([
+            'shift_name' => 'required|string|max:50',
+            'start_datetime' => 'nullable|date_format:Y-m-d\TH:i',
+            'end_datetime' => 'nullable|date_format:Y-m-d\TH:i',
+            'doctor_ids' => 'nullable|array',
+            'doctor_ids.*' => 'exists:users,id',
+            'employee_ids' => 'nullable|array',
+            'employee_ids.*' => 'exists:users,id',
+        ]);
+
+        $shift = Shift::create([
+            'shift_name' => $validatedData['shift_name'],
+            'start_datetime' => isset($validatedData['start_datetime']) ? Carbon::parse($validatedData['start_datetime']) : null,
+            'end_datetime' => isset($validatedData['end_datetime']) ? Carbon::parse($validatedData['end_datetime']) : null,
+        ]);
+
+        if (isset($validatedData['doctor_ids'])) {
+            $shift->users()->attach($validatedData['doctor_ids']);
+        }
+
+        if (isset($validatedData['employee_ids'])) {
+            $shift->users()->attach($validatedData['employee_ids']);
+        }
+
+        return redirect()->route('admin.shifts.index')->with('success', 'Shift created successfully.');
+    }
+
+    public function updateShift(Request $request, $id)
+    {
+        $validatedData = $request->validate([
+            'shift_name' => 'required|string|max:50',
+            'start_datetime' => 'nullable|date_format:Y-m-d\TH:i',
+            'end_datetime' => 'nullable|date_format:Y-m-d\TH:i',
+            'doctor_ids' => 'nullable|array',
+            'doctor_ids.*' => 'exists:users,id',
+            'employee_ids' => 'nullable|array',
+            'employee_ids.*' => 'exists:users,id',
+        ]);
+
+        $shift = Shift::findOrFail($id);
+        $shift->update([
+            'shift_name' => $validatedData['shift_name'],
+            'start_datetime' => isset($validatedData['start_datetime']) ? Carbon::parse($validatedData['start_datetime']) : null,
+            'end_datetime' => isset($validatedData['end_datetime']) ? Carbon::parse($validatedData['end_datetime']) : null,
+        ]);
+
+        $syncData = [];
+        if (isset($validatedData['doctor_ids'])) {
+            $syncData = array_merge($syncData, $validatedData['doctor_ids']);
+        }
+        if (isset($validatedData['employee_ids'])) {
+            $syncData = array_merge($syncData, $validatedData['employee_ids']);
+        }
+        $shift->users()->sync($syncData);
+
+        return redirect()->route('admin.shifts.index')->with('success', 'Shift updated successfully.');
+    }
+
+    public function deleteShift($id)
+    {
+        try {
+            $shift = Shift::findOrFail($id);
+            $shift->users()->detach(); // Detach all users from the shift
+            $shift->delete();
+
+            return redirect()->route('admin.shifts.index')->with('success', 'Shift deleted successfully.');
+        } catch (\Exception $e) {
+            // Log or handle the exception as needed
+            return redirect()->route('admin.shifts.index')->with('error', 'Failed to delete shift.');
+        }
+    }
+
 
 
 

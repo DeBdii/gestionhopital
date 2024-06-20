@@ -9,7 +9,7 @@ class CreateMedicalRecordsTable extends Migration
     public function up()
     {
         Schema::create('medical_records', function (Blueprint $table) {
-            $table->id('record_id');
+            $table->id();
             $table->unsignedBigInteger('patient_id');
             $table->foreign('patient_id')->references('id')->on('patients')->onDelete('cascade');
             $table->string('diagnosis', 255);

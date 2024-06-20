@@ -23,4 +23,9 @@ class User extends Authenticatable implements AuthenticatableContract
     {
         return $this->belongsTo(Department::class);
     }
+
+    public function shifts()
+    {
+        return $this->belongsToMany(Shift::class, 'shift_user');
+    }
 }

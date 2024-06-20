@@ -32,7 +32,11 @@
                         {{ __('Gestion des départements') }}
                     </x-nav-link>
                 </div>
-
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('admin.shifts.index')" :active="request()->routeIs('shifts-management')">
+                        {{ __('Gestion des shifts') }}
+                    </x-nav-link>
+                </div>
             </div>
 
             <!-- Settings Dropdown -->

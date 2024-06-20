@@ -11,7 +11,8 @@ class Shift extends Model
 
     protected $fillable = [
         'shift_name',
-        'shift_datetime',
+        'start_datetime', // Update to nullable datetime
+        'end_datetime', // Update to nullable datetime
         'doctor_id',
         'administrator_id',
         'employee_id',
@@ -19,18 +20,18 @@ class Shift extends Model
     ];
 
     // Define relationships
-    public function doctor()
+    public function users()
     {
-        return $this->belongsTo(Doctor::class);
+        return $this->belongsToMany(User::class, 'shift_user');
     }
 
-    public function administrator()
+    public function doctors()
     {
-        return $this->belongsTo(Administrator::class);
+        return $this->users()->where('user_type', 'Doctor');
     }
 
-    public function employee()
+    public function employees()
     {
-        return $this->belongsTo(Employee::class);
+        return $this->users()->whereIn('user_type', ['Nurse', 'Receptionist', 'SupportStaff']);
     }
 }

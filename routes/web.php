@@ -102,4 +102,23 @@ Route::put('/admin/departments/{id}', [AdminController::class, 'updateDepartment
 
 // Route for deleting a department
 Route::delete('/admin/departments/{id}', [AdminController::class, 'deleteDepartment'])->name('admin.departments.destroy');
+
+
+
+
+
+
+// GESTIONDESHIFTS
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/shifts', [AdminController::class, 'manageShifts'])->name('shifts.index');
+    Route::post('/shifts/store', [AdminController::class, 'storeShift'])->name('shifts.store');
+    Route::get('/shifts/{id}/edit', [AdminController::class, 'editShift'])->name('shifts.edit');
+    Route::put('/shifts/{id}/update', [AdminController::class, 'updateShift'])->name('shifts.update');
+    Route::delete('/shifts/{id}/delete', [AdminController::class, 'deleteShift'])->name('shifts.delete');
+});
+
+Route::delete('/admin/shifts/{id}', [AdminShiftsController::class, 'deleteShift']);
+
+
 require __DIR__.'/auth.php';
