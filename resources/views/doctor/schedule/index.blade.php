@@ -1,15 +1,63 @@
-@extends('layouts.appp')
+<!DOCTYPE html>
+<html lang="en">
 
-@section('content')
-    <div class="container">
-        <div id="calendar"></div>
-    </div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.7/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .bg-custom {
+            background-image: url('https://source.unsplash.com/random/1600x900?warm');
+            background-size: cover;
+            background-position: center;
+        }
+        .card {
+            border-radius: 1rem;
+            overflow: hidden;
+            transition: transform 0.3s ease-in-out;
+            background: rgba(255, 255, 255, 0.8);
+            margin-top: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 10px -1px rgba(0, 0, 0, 0.2), 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .stat-number {
+            font-size: 2.5rem;
+        }
+        .modal-content {
+            border-radius: 2rem;
+        }
+        .text-light {
+            color: #f0f0f0;
+        }
+        .container {
+            display: flex;
+            justify-content: center; /* Center horizontally */
+            margin-top: 2rem; /* Add some top margin */
+        }
+        #calendar {
+            max-width: 80%; /* Limit width */
+            max-height: 60%;
+            margin-right: -15rem; /* Push to the right */
+        }
+    </style>
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon1.png') }}">
+</head>
 
-    <!-- Include FullCalendar CSS and JS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js"></script>
+<body class="bg-custom bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-200">
+@include('layouts.doc')
+<div class="container">
+    <div id="calendar"></div>
+</div>
+
+<!-- Include FullCalendar CSS and JS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js"></script>
 
 <script>
     $(document).ready(function() {
@@ -49,7 +97,7 @@
                         start: dayStart.format(),
                         end: dayEnd.format(),
                         rendering: 'background',
-                        color: '#00FF00' // Color for the background shifts
+                        color: '#398886' // Color for the background shifts
                     });
 
                     shiftDates.push(dayStart.format('YYYY-MM-DD')); // Collect the shift date
@@ -77,7 +125,7 @@
             },
             dayRender: function(date, cell) {
                 if (shiftDates.includes(date.format('YYYY-MM-DD'))) {
-                    cell.css("background-color", '#00FF00'); // Green color for the shift days
+                    cell.css("background-color", '#47b09c'); // Green color for the shift days
                 }
             },
             eventResize: function(event) {
@@ -127,4 +175,6 @@
         });
     });
 </script>
-@endsection
+</body>
+
+</html>

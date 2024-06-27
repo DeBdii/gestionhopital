@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Patient; // Ensure this is correctly pointing to the Patient model
-
+use App\Models\Patient;
 use Illuminate\Http\Request;
 
 use App\Models\MedicalRecord;
@@ -21,14 +20,14 @@ class ReceptionistController extends Controller
 {
     public function managePatients()
     {
-        $patients = Patient::all(); // Example: Fetching all patients
+        $patients = Patient::all();
         return view('receptionist.patients', compact('patients'));
     }
 
 
     public function store(Request $request)
     {
-        // Validate incoming data
+
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'dob' => 'required|date',
@@ -37,16 +36,16 @@ class ReceptionistController extends Controller
             'address' => 'required|string|max:255',
         ]);
 
-        // Create new patient record
+
         $patient = Patient::create($validatedData);
 
-        // Optionally, return a response
+
         return redirect()->back()->with('success', 'Patient added successfully');
     }
 
     public function update(Request $request, $id)
     {
-        // Validate incoming data
+
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'dob' => 'required|date',
@@ -54,24 +53,17 @@ class ReceptionistController extends Controller
             'contact_number' => 'required|string|max:20',
             'address' => 'required|string|max:255',
         ]);
-
-        // Find the patient by ID
         $patient = Patient::findOrFail($id);
 
-        // Update patient record
         $patient->update($validatedData);
 
-        // Optionally, return a response
         return redirect()->back()->with('success', 'Patient updated successfully');
     }
     public function destroy(Patient $patient)
     {
-        // Ensure the authenticated user has permission to delete the patient (if needed)
-
-        // Delete the patient
         $patient->delete();
 
-        // Optionally, you can return a response or redirect to a specific route
+
         return redirect()->route('receptionist.patients')
             ->with('success', 'Patient deleted successfully');
     }
@@ -119,7 +111,7 @@ class ReceptionistController extends Controller
             ->with('success', 'Medical record updated successfully.');
     }
 
-    // Delete a medical record
+
     public function destroyMedicalRecord(MedicalRecord $medicalRecord)
     {
         $patientId = $medicalRecord->patient_id;
@@ -153,7 +145,7 @@ class ReceptionistController extends Controller
 
     public function storeAppointment(Request $request)
     {
-        // Validate the request data
+
         $request->validate([
             'doctor_id' => 'required|exists:users,id',
             'patient_id' => 'required|exists:patients,id',
@@ -161,41 +153,39 @@ class ReceptionistController extends Controller
             'appointment_time' => 'required|date_format:H:i',
         ]);
 
-        // Combine date and time into a single DateTime string
+
         $appointmentDateTime = $request->input('appointment_date') . ' ' . $request->input('appointment_time');
 
-        // Create a new appointment
+
         $appointment = new Appointment();
         $appointment->doctor_id = $request->input('doctor_id');
         $appointment->patient_id = $request->input('patient_id');
         $appointment->appointment_date = $appointmentDateTime;
         $appointment->save();
 
-        // Redirect back with success message
+
         return redirect()->route('receptionist.appointments')->with('success', 'Appointment successfully created.');
     }
 
     public function displayAppointments($doctor)
     {
-        // Find the doctor by ID
         $doctor = User::findOrFail($doctor);
         $shifts = Shift::with('users')->get();
-        // Retrieve appointments and shifts where the doctor is associated
         $appointments = Appointment::with(['doctor', 'patient'])
             ->where('doctor_id', $doctor->id)
             ->get();
         $userShifts = $doctor->shifts->pluck('id')->toArray();
 
-        // Return appointments and shifts to be displayed
+
         return view('receptionist.doctorcalendar', compact('shifts', 'userShifts', 'appointments','doctor'));
 
     }
 
     public function manageItems()
-{
-    $items = Item::all();
-    return view('receptionist.stock', compact('items'));
-}
+    {
+        $items = Item::all();
+        return view('receptionist.stock', compact('items'));
+    }
 
 
 
@@ -203,10 +193,9 @@ class ReceptionistController extends Controller
 
     public function dashboard()
     {
-        // Define today's date
+
         $today = now()->format('Y-m-d');
 
-        // Fetch count of doctors per department with shifts including today
         $availableDoctorsCount = Department::withCount(['users' => function ($query) use ($today) {
             $query->where('user_type', 'Doctor')
                 ->whereHas('shifts', function ($query) use ($today) {
@@ -215,35 +204,18 @@ class ReceptionistController extends Controller
                 });
         }])->get();
 
-        // Fetch items with their quantities
+
         $itemsQuantity = Item::all();
 
-        // Fetch total appointments count
+
         $appointmentsCount = Appointment::whereDate('appointment_date', '>=', $today)->count();
 
-        // Fetch total patients count
         $patientsCount = Patient::count();
 
-        // Fetch today's appointments and count
+
         $todayAppointmentsCount = Appointment::whereDate('appointment_date', $today)->count();
 
-        // Return data to the view
         return view('receptionist.dashboard', compact('availableDoctorsCount', 'itemsQuantity', 'appointmentsCount', 'patientsCount', 'todayAppointmentsCount'));
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }

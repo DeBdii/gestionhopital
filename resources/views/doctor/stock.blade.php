@@ -27,6 +27,7 @@
             justify-content: center;
         }
     </style>
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon1.png') }}">
 </head>
 
 <body class="bg-gray-100">
@@ -55,7 +56,7 @@
                             <td class="py-2 px-4">{{ $item->description }}</td>
                             <td class="py-2 px-4">{{ $item->quantity }}</td>
                             <td class="py-2 px-4">
-                                <button 
+                                <button
                                     class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                                     onclick="openModal('{{ $item->id }}', '{{ $item->name }}')"
                                 >
@@ -78,12 +79,12 @@
                 <input type="hidden" name="item_id" id="modal-item-id">
                 <div class="mb-4">
                     <label for="quantity" class="block text-sm font-medium text-gray-700">Quantity</label>
-                    <input 
-                        type="number" 
-                        id="quantity" 
-                        name="quantity" 
+                    <input
+                        type="number"
+                        id="quantity"
+                        name="quantity"
                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        required 
+                        required
                         min="1"
                     >
                 </div>

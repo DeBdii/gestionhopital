@@ -9,6 +9,7 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <!-- Tailwind CSS -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon1.png') }}">
 </head>
 
 <body class="bg-gray-100">
@@ -51,7 +52,7 @@
                         <td class="py-3 px-6">{{ $staffMember->user_type }}</td>
                         <td class="py-3 px-6">{{ $staffMember->salary }} DH</td>
                         <td class="py-3 px-6">
-                            <button class="btn btn-sm btn-info mr-2" data-toggle="modal" data-target="#editStaffModal" 
+                            <button class="btn btn-sm btn-info mr-2" data-toggle="modal" data-target="#editStaffModal"
                                data-id="{{ $staffMember->id }}" data-name="{{ $staffMember->name }}" data-email="{{ $staffMember->email }}"
                                data-role="{{ $staffMember->user_type }}" data-salary="{{ $staffMember->salary }}">Edit</button>
                             <form action="{{ route('admin.staff.destroy', $staffMember->id) }}" method="POST"
@@ -151,7 +152,7 @@
         var email = button.data('email');
         var role = button.data('role');
         var salary = button.data('salary');
-        
+
         var modal = $(this);
         modal.find('.modal-body #staff_id').val(id);
         modal.find('.modal-body #name').val(name);

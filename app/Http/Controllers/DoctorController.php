@@ -285,6 +285,46 @@ public function demandItem(Request $request)
 }
 
 
+    public function dashboard()
+    {
+        // Define today's date
+        $today = now()->format('Y-m-d');
+
+        // Fetch the logged-in doctor
+        $doctor = auth()->user();
+
+        // Fetch today's appointments for the logged-in doctor
+        $todayAppointments = $doctor->appointmentsAsDoctor()
+            ->whereDate('appointment_date', $today)
+            ->get();
+
+        // Fetch overall number of patients the doctor has appointments with
+        $patientsCount = $doctor->appointmentsAsDoctor()
+            ->distinct('patient_id')
+            ->count('patient_id');
+
+        // Fetch department items and their quantities (only the department the doctor is related to)
+        $departmentItems = $doctor->department->items;
+
+        // Fetch shift details for the logged-in doctor
+        $shift = $doctor->shifts()
+            ->whereDate('start_datetime', '<=', $today)
+            ->whereDate('end_datetime', '>=', $today)
+            ->first();
+
+        // Prepare shift start and end times
+        $shiftStartTime = optional($shift)->start_datetime ? \Carbon\Carbon::parse($shift->start_datetime)->format('H:i') : 'N/A';
+        $shiftEndTime = optional($shift)->end_datetime ? \Carbon\Carbon::parse($shift->end_datetime)->format('H:i') : 'N/A';
+
+        // Return data to the view using compact
+        return view('doctor.dashboard', compact('todayAppointments', 'patientsCount', 'departmentItems', 'shiftStartTime', 'shiftEndTime', 'doctor'));
+    }
+
+
+
+
+
+
 
 
 }

@@ -32,6 +32,7 @@
             color: #f0f0f0;
         }
     </style>
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon1.png') }}">
 </head>
 
 <body class="bg-custom bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-200">

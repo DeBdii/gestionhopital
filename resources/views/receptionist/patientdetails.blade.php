@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patient Details</title>
+    <title>Patients Details</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome for icons -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <!-- Tailwind CSS (optional for additional styles) -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Bootstrap Datepicker CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" rel="stylesheet">
     <!-- Custom CSS -->
     <style>
         .container {
@@ -33,8 +35,9 @@
             border-color: #fff; /* White border color */
         }
     </style>
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon1.png') }}">
 </head>
-<body>
+<body class="bg-gray-100">
 @include('layouts.repnav')
 
 <!-- Main Content -->
@@ -192,6 +195,8 @@
         </div>
     </div>
 </div>
+</body>
+</html>
 
 <!-- Include jQuery and Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -221,5 +226,3 @@
         }
     });
 </script>
-</body>
-</html>

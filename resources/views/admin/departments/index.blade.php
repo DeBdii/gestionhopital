@@ -4,70 +4,67 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Departments</title>
+    <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Tailwind CSS (for layout and utility classes) -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon1.png') }}">
 </head>
-<body>
+<body class="bg-gray-100">
 @include('layouts.fakenavdebdii')
 
-<div class="container py-6">
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-6 bg-white border-b border-gray-200 dark:border-gray-700">
-                <h2 class="text-2xl font-semibold mb-4">Departments</h2>
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white p-4 rounded-lg shadow-sm mb-4">
+        <div class="flex justify-between items-center mb-4">
+            <h1 class="text-2xl font-bold">Departments</h1>
+            <!-- Add New Department Button -->
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createDepartmentModal">
+                Add New Department
+            </button>
+        </div>
 
-                <div class="flex justify-between mb-4">
-                    <div>
-                        <!-- Button to add a new department -->
-                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createDepartmentModal">
-                            Add New Department
-                        </button>
-                    </div>
-                </div>
-
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead class="thead-dark">
-                        <tr>
-                            <th scope="col">Name</th>
-                            <th scope="col">Doctor</th>
-                            <th scope="col">Stock Items</th>
-                            <th scope="col">Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @forelse ($departments as $department)
-                            <tr>
-                                <td>{{ $department->department_name }}</td>
-                                <td>
-                                    @if ($department->users->isNotEmpty())
-                                        {{ $department->users->implode('name', ', ') }}
-                                    @else
-                                        <span class="text-muted">No assigned doctor</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    @foreach ($department->items as $item)
-                                        {{ $item->name }}
-                                    @endforeach
-                                </td>
-                                <td>
-                                    <a href="#" class="btn btn-sm btn-info edit-department" data-toggle="modal" data-target="#editDepartmentModal{{ $department->id }}">Edit</a>
-                                    <form action="{{ route('admin.departments.destroy', $department->id) }}" method="POST" class="d-inline-block">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4">No departments found.</td>
-                            </tr>
-                        @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead class="thead-dark">
+                <tr>
+                    <th scope="col" class="px-4 py-2">Name</th>
+                    <th scope="col" class="px-4 py-2">Doctor</th>
+                    <th scope="col" class="px-4 py-2">Stock Items</th>
+                    <th scope="col" class="px-4 py-2">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                @forelse ($departments as $department)
+                    <tr>
+                        <td class="px-4 py-2">{{ $department->department_name }}</td>
+                        <td class="px-4 py-2">
+                            @if ($department->users->isNotEmpty())
+                                {{ $department->users->implode('name', ', ') }}
+                            @else
+                                <span class="text-muted">No assigned doctor</span>
+                            @endif
+                        </td>
+                        <td class="px-4 py-2">
+                            @foreach ($department->items as $item)
+                                {{ $item->name }}
+                            @endforeach
+                        </td>
+                        <td class="px-4 py-2">
+                            <a href="#" class="btn btn-sm btn-info edit-department" data-toggle="modal" data-target="#editDepartmentModal{{ $department->id }}">Edit</a>
+                            <form action="{{ route('admin.departments.destroy', $department->id) }}" method="POST" class="inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="4">No departments found.</td>
+                    </tr>
+                @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
@@ -87,31 +84,35 @@
                 <form action="{{ route('admin.departments.store') }}" method="POST">
                     @csrf
 
-                    <div class="form-group">
-                        <label for="department_name">Department Name</label>
-                        <input type="text" name="department_name" id="department_name" class="form-control" required>
+                    <div class="mb-4">
+                        <label for="department_name" class="block text-sm font-medium text-gray-700">Department Name</label>
+                        <input type="text" name="department_name" id="department_name" class="form-input mt-1 block w-full" required>
                     </div>
 
-                    <div class="form-group">
-                        <label>Select Doctor(s)</label>
-                        <div class="form-check">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700">Select Doctor(s)</label>
+                        <div class="space-y-2">
                             @foreach ($doctors as $doctor)
-                                <input class="form-check-input" type="checkbox" name="doctors[]" id="doctor{{ $doctor->id }}" value="{{ $doctor->id }}">
-                                <label class="form-check-label" for="doctor{{ $doctor->id }}">
-                                    {{ $doctor->name }} - {{ $doctor->specialty }}
-                                </label><br>
+                                <div class="flex items-center">
+                                    <input class="form-checkbox h-4 w-4 text-indigo-600" type="checkbox" name="doctors[]" id="doctor{{ $doctor->id }}" value="{{ $doctor->id }}">
+                                    <label class="ml-2 block text-sm text-gray-900" for="doctor{{ $doctor->id }}">
+                                        {{ $doctor->name }} - {{ $doctor->specialty }}
+                                    </label>
+                                </div>
                             @endforeach
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label>Select Stock Item(s)</label>
-                        <div class="form-check">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700">Select Stock Item(s)</label>
+                        <div class="space-y-2">
                             @foreach ($items as $item)
-                                <input class="form-check-input" type="checkbox" name="items[]" id="item{{ $item->id }}" value="{{ $item->id }}">
-                                <label class="form-check-label" for="item{{ $item->id }}">
-                                    {{ $item->name }} - Quantity: {{ $item->quantity }}
-                                </label><br>
+                                <div class="flex items-center">
+                                    <input class="form-checkbox h-4 w-4 text-indigo-600" type="checkbox" name="items[]" id="item{{ $item->id }}" value="{{ $item->id }}">
+                                    <label class="ml-2 block text-sm text-gray-900" for="item{{ $item->id }}">
+                                        {{ $item->name }} - Quantity: {{ $item->quantity }}
+                                    </label>
+                                </div>
                             @endforeach
                         </div>
                     </div>
@@ -142,15 +143,15 @@
                     <div class="modal-body">
                         <input type="hidden" id="edit_department_id" name="department_id" value="{{ $department->id }}">
 
-                        <div class="form-group">
-                            <label for="edit_department_name">Department Name</label>
-                            <input type="text" class="form-control" id="edit_department_name{{ $department->id }}" name="department_name"
+                        <div class="mb-4">
+                            <label for="edit_department_name" class="block text-sm font-medium text-gray-700">Department Name</label>
+                            <input type="text" class="form-input mt-1 block w-full" id="edit_department_name{{ $department->id }}" name="department_name"
                                    value="{{ $department->department_name }}" required>
                         </div>
 
-                        <div class="form-group">
-                            <label for="edit_doctors{{ $department->id }}">Select Doctor(s)</label>
-                            <select name="edit_doctors[]" id="edit_doctors{{ $department->id }}" multiple class="form-control">
+                        <div class="mb-4">
+                            <label for="edit_doctors{{ $department->id }}" class="block text-sm font-medium text-gray-700">Select Doctor(s)</label>
+                            <select name="edit_doctors[]" id="edit_doctors{{ $department->id }}" multiple class="form-multiselect block w-full mt-1">
                                 @foreach ($doctors as $doctor)
                                     <option value="{{ $doctor->id }}" {{ $department->users->contains('id', $doctor->id) ? 'selected' : '' }}>
                                         {{ $doctor->name }} - {{ $doctor->specialty }}
@@ -159,9 +160,9 @@
                             </select>
                         </div>
 
-                        <div class="form-group">
-                            <label for="edit_items{{ $department->id }}">Select Stock Item(s)</label>
-                            <select name="edit_items[]" id="edit_items{{ $department->id }}" multiple class="form-control">
+                        <div class="mb-4">
+                            <label for="edit_items{{ $department->id }}" class="block text-sm font-medium text-gray-700">Select Stock Item(s)</label>
+                            <select name="edit_items[]" id="edit_items{{ $department->id }}" multiple class="form-multiselect block w-full mt-1">
                                 @foreach ($items as $item)
                                     <option value="{{ $item->id }}" {{ $department->items->contains('id', $item->id) ? 'selected' : '' }}>
                                         {{ $item->name }} - Quantity: {{ $item->quantity }}
@@ -184,15 +185,5 @@
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-<!-- Custom JavaScript -->
-<script>
-    $(document).ready(function() {
-        $('.edit-department').click(function() {
-            // This script is placeholder for handling edit click events if needed
-        });
-    });
-</script>
-
 </body>
 </html>

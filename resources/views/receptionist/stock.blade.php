@@ -25,6 +25,7 @@
             justify-content: center;
         }
     </style>
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon1.png') }}">
 </head>
 
 <body class="bg-gray-100">

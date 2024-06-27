@@ -34,9 +34,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         return view('admin.dashboard');
     })->name('admin');
 
-    Route::get('dashboard', function () {
-        return view('admin.dashboard');
-    })->name('dashboard');
+    Route::get('dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
 
     // Gestion des Docteurs
     Route::get('doctors', [AdminController::class, 'manageDoctors'])->name('doctors.index');
@@ -88,9 +86,8 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'doctor'])->group(
     })->name('doctor');
 
 
-    Route::get('dashboard', function () {
-        return view('doctor.dashboard');
-    })->name('dashboard');
+    Route::get('dashboard', [DoctorController::class, 'dashboard'])->name('dashboard');
+
 
 
     Route::get('patients', [DoctorController::class, 'managePatients'])->name('patients');
