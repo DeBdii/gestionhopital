@@ -122,9 +122,9 @@ Route::prefix('receptionist')->name('receptionist.')->middleware(['auth', 'recep
 
 
 
-    Route::get('appointments', [ReceptionistController::class, 'manageAppointments'])->name('appointments');
     Route::post('appointments/store', [ReceptionistController::class, 'storeAppointment'])->name('appointments.store');
-    Route::get('doctors/{doctor}/calendar', [ReceptionistController::class, 'displayAppointments'])->name('doctorcalendar');
+    Route::get('appointments', [ReceptionistController::class, 'manageAppointments'])->name('appointments');
+    Route::get('doctors/{doctorId}/calendar', [ReceptionistController::class, 'displayAppointments'])->name('doctors.calendar');
 
 
     Route::get('stock', [ReceptionistController::class, 'manageItems'])->name('stock');

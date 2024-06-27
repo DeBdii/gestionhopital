@@ -50,12 +50,8 @@
             z-index: 9999; /* Increased z-index */
             color: #000; /* Adjust color as needed */
             opacity: 0.5; /* Adjust opacity for hover effect */
+            cursor: pointer;
         }
-
-
-
-
-
 
         .search-input {
             width: 100%; /* Adjust width to match */
@@ -165,13 +161,22 @@
                     <div class="form-group">
                         <label for="specialty">Specialty</label>
                         <input type="text" class="form-control" id="specialty" readonly>
+                        <input type="hidden" id="patient_id" name="patient_id">
+                        <input type="hidden" id="doctor_id" name="doctor_id">
+                        <button type="button" class="btn btn-link" id="viewCalendarBtn">View Calendar</button>
                     </div>
                 </div>
 
-                <!-- Date and Time Selection -->
+                <!-- Date Selection -->
                 <div class="form-group">
-                    <label for="appointment_datetime">Select Appointment Date and Time</label>
-                    <input type="text" class="form-control datepicker" id="appointment_datetime" name="appointment_datetime" required>
+                    <label for="appointment_date">Select Appointment Date</label>
+                    <input type="text" class="form-control datepicker" id="appointment_date" name="appointment_date" required>
+                </div>
+
+                <!-- Time Selection -->
+                <div class="form-group">
+                    <label for="appointment_time">Select Appointment Time</label>
+                    <input type="time" class="form-control" id="appointment_time" name="appointment_time" required>
                 </div>
             </div>
         </div>
@@ -182,37 +187,20 @@
         </div>
     </form>
 </div>
-<!-- Doctor's Calendar Modal -->
-<div class="modal fade" id="doctorCalendarModal" tabindex="-1" role="dialog" aria-labelledby="doctorCalendarModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content rounded-3 border-0">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="doctorCalendarModalLabel">Doctor's Calendar</h5>
-                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <!-- Close button within modal body -->
-                <button type="button" class="close close-btn" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
 
-                <!-- Calendar content will be loaded here dynamically -->
-                <!-- Leave this empty to be populated dynamically -->
+<!-- Modal -->
+<div id="calendarModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center hidden">
+    <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg w-full max-w-4xl modal-content">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 id="modalTitle" class="text-xl font-semibold text-gray-900 dark:text-gray-100">Doctor's Calendar</h2>
+                <button id="closeModal" class="close-btn">&times;</button>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <!-- Additional Close Button -->
-                <button type="button" class="btn btn-secondary close-btn" data-dismiss="modal">Close</button>
-            </div>
+            <iframe id="calendarFrame" src="" class="w-full h-96"></iframe>
         </div>
     </div>
 </div>
 
-
-
-<!-- Include jQuery and Bootstrap JS -->
 <!-- Include jQuery and Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
@@ -223,7 +211,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
 <script>
     $(document).ready(function() {
-        // Initialize datepicker
+        // Initialize datepicker for date selection
         $('.datepicker').datepicker({
             format: 'yyyy-mm-dd',
             autoclose: true,
@@ -242,7 +230,7 @@
                 return;
             }
             var results = patients.filter(patient =>
-                patient.name.toLowerCase().startsWith(searchTerm) ||
+                patient.name.toLowerCase().includes(searchTerm) ||
                 patient.id.toString().includes(searchTerm)
             );
             displaySearchResults(results, '#searchResultsPatient', 'patient');
@@ -256,8 +244,7 @@
                 return;
             }
             var results = doctors.filter(doctor =>
-                doctor.name.toLowerCase().startsWith(searchTerm) ||
-                doctor.specialty.toLowerCase().startsWith(searchTerm)
+                doctor.name.toLowerCase().includes(searchTerm)
             );
             displaySearchResults(results, '#searchResultsDoctor', 'doctor');
         }
@@ -277,17 +264,7 @@
                             resultsContainer.hide();
                         });
                     } else if (type === 'doctor') {
-                        var doctorInfo = $('<div class="d-flex justify-content-between align-items-center"></div>');
-                        var doctorName = $('<span></span>').text(item.name + ' (' + item.specialty + ')');
-                        var scheduleButton = $('<button class="btn btn-outline-secondary schedule-btn">View Calendar</button>');
-                        // Pass the doctor object to the modal
-                        scheduleButton.click(function(e) {
-                            e.preventDefault(); // Prevent form submission
-                            e.stopPropagation(); // Prevent hiding of resultsContainer
-                            openDoctorShiftsModal(item);
-                        });
-                        doctorInfo.append(doctorName, scheduleButton);
-                        resultItem.append(doctorInfo);
+                        resultItem.text(item.name);
                         resultItem.data('doctor', item);
                         resultItem.click(function() {
                             selectDoctor($(this).data('doctor'));
@@ -302,47 +279,47 @@
             }
         }
 
-        // Function to select patient
         function selectPatient(patient) {
             $('#patient_name').val(patient.name);
             $('#dob').val(patient.dob);
+            $('#patient_id').val(patient.id); // Update hidden input field with patient's ID
             $('#patientInfo').show();
         }
 
-        // Function to select doctor
         function selectDoctor(doctor) {
             $('#doctor_name').val(doctor.name);
             $('#specialty').val(doctor.specialty);
+            $('#doctor_id').val(doctor.id); // Update hidden input field with doctor's ID
             $('#doctorInfo').show();
-        }
-
-        // Function to open doctor's shifts modal
-        // Function to open doctor's shifts modal
-        function openDoctorShiftsModal(doctor) {
-            // AJAX request to fetch calendar data
-            $.ajax({
-                url: '{{ route('receptionist.doctorcalendar', ['doctor' => ':doctor_id']) }}'.replace(':doctor_id', doctor.id),
-                method: 'GET',
-                success: function(data) {
-                    $('#doctorCalendarModal .modal-content').html(data); // Load calendar view into modal content
-                    $('#doctorCalendarModal').modal('show'); // Show modal after content is loaded
-                },
-                error: function(xhr, status, error) {
-                    console.error(error);
-                    // Handle error case here
-                }
-            });
         }
 
 
         // Attach search functions to the window object to make them accessible
         window.searchPatients = searchPatients;
         window.searchDoctors = searchDoctors;
+        $('#viewCalendarBtn').click(function() {
+            openDoctorCalendarModal();
+        });
+
+        // Function to open the doctor's calendar modal
+        function openDoctorCalendarModal() {
+            var doctorId = $('#doctor_id').val();
+            var calendarUrl = `{{ route('receptionist.doctors.calendar', ['doctorId' => ':doctorId']) }}`;
+            calendarUrl = calendarUrl.replace(':doctorId', doctorId);
+            $('#calendarFrame').attr('src', calendarUrl);
+            $('#calendarModal').removeClass('hidden').addClass('flex');
+        }
+
+        // Function to close the doctor's calendar modal
+        $('#closeModal').click(function() {
+            closeDoctorCalendarModal();
+        });
+
+        function closeDoctorCalendarModal() {
+            $('#calendarModal').removeClass('flex').addClass('hidden');
+            $('#calendarFrame').attr('src', '');
+        }
     });
-
 </script>
-
-</script>
-
 </body>
 </html>

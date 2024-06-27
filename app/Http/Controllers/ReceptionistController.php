@@ -151,6 +151,29 @@ class ReceptionistController extends Controller
     }
 
 
+    public function storeAppointment(Request $request)
+    {
+        // Validate the request data
+        $request->validate([
+            'doctor_id' => 'required|exists:users,id',
+            'patient_id' => 'required|exists:patients,id',
+            'appointment_date' => 'required|date|after_or_equal:today',
+            'appointment_time' => 'required|date_format:H:i',
+        ]);
+
+        // Combine date and time into a single DateTime string
+        $appointmentDateTime = $request->input('appointment_date') . ' ' . $request->input('appointment_time');
+
+        // Create a new appointment
+        $appointment = new Appointment();
+        $appointment->doctor_id = $request->input('doctor_id');
+        $appointment->patient_id = $request->input('patient_id');
+        $appointment->appointment_date = $appointmentDateTime;
+        $appointment->save();
+
+        // Redirect back with success message
+        return redirect()->route('receptionist.appointments')->with('success', 'Appointment successfully created.');
+    }
 
     public function displayAppointments($doctor)
     {
@@ -178,7 +201,6 @@ class ReceptionistController extends Controller
 
 
 
-
     public function dashboard()
     {
         // Define today's date
@@ -197,14 +219,18 @@ class ReceptionistController extends Controller
         $itemsQuantity = Item::all();
 
         // Fetch total appointments count
-        $appointmentsCount = Appointment::count();
+        $appointmentsCount = Appointment::whereDate('appointment_date', '>=', $today)->count();
 
         // Fetch total patients count
         $patientsCount = Patient::count();
 
+        // Fetch today's appointments and count
+        $todayAppointmentsCount = Appointment::whereDate('appointment_date', $today)->count();
+
         // Return data to the view
-        return view('receptionist.dashboard', compact('availableDoctorsCount', 'itemsQuantity', 'appointmentsCount', 'patientsCount'));
+        return view('receptionist.dashboard', compact('availableDoctorsCount', 'itemsQuantity', 'appointmentsCount', 'patientsCount', 'todayAppointmentsCount'));
     }
+
 
 
 

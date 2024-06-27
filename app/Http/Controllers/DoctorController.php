@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\User; // Corrected use statement
+use App\Models\User;
 use App\Models\Patient;
 use Illuminate\Http\Request;
 use App\Models\Shift;
@@ -10,6 +10,8 @@ use App\Models\Appointment;
 use App\Models\DepartmentItem;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Models\MedicalRecord;
+
 class DoctorController extends Controller
 {
     // Index (List all doctors)
@@ -89,7 +91,7 @@ class DoctorController extends Controller
     return redirect()->route('admin.doctors.index')->with('success', 'Doctor updated successfully.');
     }
 
-   
+
     public function destroy($id)
     {
         $doctor = User::findOrFail($id);
@@ -103,13 +105,13 @@ class DoctorController extends Controller
     {
         $user = Auth::user();
 
-    
+
         $shifts = Shift::with('users')->get();
 
-        
+
         $userShifts = $user->shifts->pluck('id')->toArray();
 
-    
+
         $appointments = Appointment::with(['doctor', 'patient'])
             ->where('doctor_id', $user->id)
             ->get();
@@ -121,9 +123,9 @@ class DoctorController extends Controller
 
     public function managePatients()
     {
-        $doctorId = Auth::id(); 
+        $doctorId = Auth::id();
         $patients = Patient::all();
-   
+
         $patientt = Patient::whereHas('appointments', function ($query) use ($doctorId) {
         $query->where('doctor_id', $doctorId);
          })->get();
@@ -236,10 +238,10 @@ class DoctorController extends Controller
 
     public function showStock()
 {
-    
+
     $doctor = Auth::user();
 
-    
+
     $items = $doctor->department->items;
 
     // Pass the data to the view
@@ -261,11 +263,11 @@ public function demandItem(Request $request)
 
         $item = Item::findOrFail($request->item_id);
 
-       
+
         $item->quantity -= $request->quantity;
         $item->save();
 
-      
+
         $departmentItem = DepartmentItem::where('department_id', Auth::user()->department_id)
                                         ->where('item_id', $request->item_id)
                                         ->firstOrFail();
@@ -284,5 +286,5 @@ public function demandItem(Request $request)
 
 
 
-    
+
 }

@@ -193,11 +193,14 @@ class AdminController extends Controller
         // Assign items to the department if selected
         if (isset($validatedData['items'])) {
             foreach ($validatedData['items'] as $itemId) {
-                DB::table('department_items')->insert([
-                    'department_id' => $department->id,
-                    'item_id' => $itemId,
-                    'quantity' => $item->quantity,
-                ]);
+                $item = Item::find($itemId);
+                if ($item) {
+                    DB::table('department_items')->insert([
+                        'department_id' => $department->id,
+                        'item_id' => $itemId,
+                        'quantity' => $item->quantity,
+                    ]);
+                }
             }
         }
 
