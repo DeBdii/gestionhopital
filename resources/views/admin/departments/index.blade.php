@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Departments</title>
+    <title>Gestion des departements</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <!-- Tailwind CSS (for layout and utility classes) -->
@@ -16,10 +16,10 @@
 <div class="container mx-auto px-4 py-8">
     <div class="bg-white p-4 rounded-lg shadow-sm mb-4">
         <div class="flex justify-between items-center mb-4">
-            <h1 class="text-2xl font-bold">Departments</h1>
+            <h1 class="text-2xl font-bold">Departements</h1>
             <!-- Add New Department Button -->
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createDepartmentModal">
-                Add New Department
+                Ajouter un departement
             </button>
         </div>
 
@@ -27,10 +27,10 @@
             <table class="table table-striped">
                 <thead class="thead-dark">
                 <tr>
-                    <th scope="col" class="px-4 py-2">Name</th>
-                    <th scope="col" class="px-4 py-2">Doctor</th>
-                    <th scope="col" class="px-4 py-2">Stock Items</th>
-                    <th scope="col" class="px-4 py-2">Actions</th>
+                    <th scope="col" class="px-4 py-2">Nom</th>
+                    <th scope="col" class="px-4 py-2">Docteurs</th>
+                    <th scope="col" class="px-4 py-2">Stock </th>
+                    <th scope="col" class="px-4 py-2">Action</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -41,7 +41,7 @@
                             @if ($department->users->isNotEmpty())
                                 {{ $department->users->implode('name', ', ') }}
                             @else
-                                <span class="text-muted">No assigned doctor</span>
+                                <span class="text-muted">Aucun docteur</span>
                             @endif
                         </td>
                         <td class="px-4 py-2">
@@ -60,7 +60,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="4">No departments found.</td>
+                        <td colspan="4">Aucun departement.</td>
                     </tr>
                 @endforelse
                 </tbody>
